@@ -1,0 +1,58 @@
+vision-agent:
+  document:
+    # PDF rendering resolution. Higher = sharper images but larger payloads.
+    pdf-dpi: ${PDF_DPI:150}
+    # Safety cap on how many PDF pages are rendered and sent to the model.
+    max-pages: ${PDF_MAX_PAGES:10}
+
+spring:
+  application:
+    name: vision-agent
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+
+  ai:
+    # ----------------------------------------------------------------------
+    # DEFAULT PROVIDER: local Ollama (active out of the box)
+    # Run a vision model first, e.g.:  ollama pull llava
+    # ----------------------------------------------------------------------
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        options:
+          model: ${OLLAMA_MODEL:llava}
+          temperature: 0.0
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.example.visionagent: DEBUG
+
+---
+# ----------------------------------------------------------------------
+# FUTURE PROVIDER: OpenAI
+# Build with the Maven profile:   mvn -Popenai clean package
+# Run with:                       SPRING_PROFILES_ACTIVE=openai \
+#                                 OPENAI_API_KEY=sk-...  java -jar target/vision-agent-0.1.0-SNAPSHOT.jar
+# ----------------------------------------------------------------------
+spring:
+  config:
+    activate:
+      on-profile: openai
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:gpt-4o}
+          temperature: 0.0

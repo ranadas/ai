@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: invoice-agent
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+
+  # ---------------------------------------------------------------
+  # LLM connectivity is owned by Spring AI. Point base-url at
+  # api.openai.com, an Azure OpenAI deployment, a corporate LLM
+  # gateway, or a local vLLM/Ollama OpenAI-compatible endpoint.
+  # ---------------------------------------------------------------
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:changeme}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:gpt-4o}
+          temperature: 0.0   # deterministic-as-possible for a regulated workflow
+
+# Koog <-> Spring AI bridge: wraps the ChatModel above into a Koog PromptExecutor
+koog:
+  spring:
+    ai:
+      chat:
+        enabled: true
+        dispatcher:
+          type: AUTO
+
+invoice-agent:
+  llm:
+    model: ${OPENAI_MODEL:gpt-4o}
+    context-length: 128000
+    max-agent-iterations: 15
+  review:
+    enforce-segregation-of-duties: true
+  geneva:
+    base-url: ${GENEVA_BASE_URL:http://localhost:9090/geneva}
+    api-key: ${GENEVA_API_KEY:local-dev-key}
+    connect-timeout: 5s
+    read-timeout: 30s
+  notification:
+    client-endpoint: ${CLIENT_NOTIFY_URL:http://localhost:9091/client/notifications}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+
+logging:
+  level:
+    com.agent.liquidalts.invoiceagent: INFO
