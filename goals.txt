@@ -2,7 +2,7 @@
 
 During the first half of the year, Rana has invested a considerable amount of time creating a framework for AI adoption and rollout across both the technical and business communities within 2S. His most significant contributions have included designing and launching the AI Champions programme, developing structured use case templates, coaching AI Champions on identifying and documenting opportunities, providing extensive AI training and support to the development teams, and acting as the HFS representative within the central AI governance and implementation process.
 
-Rana has made a significant contribution in helping to demystify AI across HFS, ensuring discussions remain focused on practical business outcomes and the capabilities available within BNP Paribas, while also keeping the organisation informed about external AI developments such as ChatGPT, Claude and other leading models. His enthusiasm and willingness to support colleagues has helped build momentum for AI adoption and increased engagement across both business and technology teams.
+Rana has made a significant contribution in helping to demystify AI across HFS, ensuring discussions remain focused on practical business outcomes and the capabilities available within the bank, while also keeping the organisation informed about external AI developments such as ChatGPT, Claude and other leading models. His enthusiasm and willingness to support colleagues has helped build momentum for AI adoption and increased engagement across both business and technology teams.
 
 For the second half of the year, I would like Rana to focus on evolving the AI programme from awareness and enablement towards delivering measurable business value. In particular, I would like him to:
 
