@@ -1,0 +1,34 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: invoice-agent-system
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:gpt-4o-mini}
+
+invoice:
+  ai:
+    mode: ${INVOICE_AGENT_MODE:multi} # multi | single
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+      model: ${OPENAI_MODEL:gpt-4o-mini}
+      timeout-seconds: ${OPENAI_TIMEOUT_SECONDS:60}
+  geneva:
+    base-url: ${GENEVA_BASE_URL:http://localhost:9091}
+    api-key: ${GENEVA_API_KEY:dev-geneva-key}
+    timeout-seconds: ${GENEVA_TIMEOUT_SECONDS:30}
+  client-callback:
+    enabled: ${CLIENT_CALLBACK_ENABLED:false}
+    base-url: ${CLIENT_CALLBACK_BASE_URL:http://localhost:9092}
+    api-key: ${CLIENT_CALLBACK_API_KEY:dev-client-key}

@@ -1,0 +1,142 @@
+[
+  {
+    "title": "Grizzly Peak",
+    "variety": "Cabernet Sauvignon",
+    "country": "US",
+    "province": "California",
+    "winery": "Grizzly Peak Winery",
+    "points": 91,
+    "price": 28.0,
+    "description": "A bold, tasty wine with ripe blackberry and cassis flavors, framed by firm tannins and a long, smoky finish. Notes of cedar, vanilla and dark chocolate emerge with air. Full-bodied and structured, it pairs beautifully with grilled red meat."
+  },
+  {
+    "title": "Silver Creek Reserve",
+    "variety": "Chardonnay",
+    "country": "US",
+    "province": "California",
+    "winery": "Silver Creek Cellars",
+    "points": 89,
+    "price": 22.0,
+    "description": "A creamy, buttery Chardonnay with aromas of baked apple, lemon curd and toasted oak. Rich on the palate with a balanced acidity and a lingering, nutty finish. A crowd-pleasing white that suits roast chicken and creamy pastas."
+  },
+  {
+    "title": "Maison Lefevre Brut",
+    "variety": "Champagne Blend",
+    "country": "France",
+    "province": "Champagne",
+    "winery": "Maison Lefevre",
+    "points": 93,
+    "price": 55.0,
+    "description": "An elegant, crisp sparkling wine with fine, persistent bubbles. Bright notes of green apple, brioche and citrus zest lead to a dry, mineral-driven finish. Refined and festive, perfect as an aperitif or with oysters."
+  },
+  {
+    "title": "Tuscan Sun Sangiovese",
+    "variety": "Sangiovese",
+    "country": "Italy",
+    "province": "Tuscany",
+    "winery": "Cantina del Sole",
+    "points": 90,
+    "price": 26.0,
+    "description": "A vibrant, food-friendly red with juicy cherry, dried herb and leather notes. Medium-bodied with bright acidity and savory tannins. A classic Tuscan style that shines alongside tomato-based pasta and aged cheeses."
+  },
+  {
+    "title": "Rioja Gran Tinto",
+    "variety": "Tempranillo",
+    "country": "Spain",
+    "province": "Rioja",
+    "winery": "Bodega Castilla",
+    "points": 92,
+    "price": 34.0,
+    "description": "A warm, generous red showing plum, fig and vanilla from extended oak aging. Smooth tannins and flavors of tobacco and dried fig make this a complex, satisfying pour. Excellent with lamb and grilled vegetables."
+  },
+  {
+    "title": "Marlborough Breeze",
+    "variety": "Sauvignon Blanc",
+    "country": "New Zealand",
+    "province": "Marlborough",
+    "winery": "Breeze Estate",
+    "points": 90,
+    "price": 19.0,
+    "description": "A zesty, aromatic white bursting with passion fruit, lime and fresh-cut grass. Crisp and refreshing with a clean, racy finish. A bright, tasty wine ideal for seafood, salads and warm afternoons."
+  },
+  {
+    "title": "Willamette Whisper",
+    "variety": "Pinot Noir",
+    "country": "US",
+    "province": "Oregon",
+    "winery": "Whisper Vineyards",
+    "points": 92,
+    "price": 38.0,
+    "description": "A silky, elegant Pinot Noir with delicate red cherry, raspberry and forest-floor aromas. Light to medium-bodied with soft tannins and a graceful, earthy finish. Pairs wonderfully with salmon and mushroom dishes."
+  },
+  {
+    "title": "Mendoza Alto",
+    "variety": "Malbec",
+    "country": "Argentina",
+    "province": "Mendoza",
+    "winery": "Finca Alto",
+    "points": 91,
+    "price": 24.0,
+    "description": "A plush, inky Malbec brimming with blackberry, blueberry and mocha. Velvety tannins and a hint of violet lead to a rich, lingering finish. A bold, tasty wine that loves grilled steak and barbecue."
+  },
+  {
+    "title": "Mosel Slate Riesling",
+    "variety": "Riesling",
+    "country": "Germany",
+    "province": "Mosel",
+    "winery": "Schiefer Weingut",
+    "points": 93,
+    "price": 29.0,
+    "description": "An off-dry Riesling with electric acidity and aromas of green apple, apricot and wet slate. Delicately sweet on entry, then bright and mineral on the finish. A versatile white that balances spicy Asian cuisine beautifully."
+  },
+  {
+    "title": "Barossa Ironbark",
+    "variety": "Shiraz",
+    "country": "Australia",
+    "province": "Barossa Valley",
+    "winery": "Ironbark Estate",
+    "points": 90,
+    "price": 27.0,
+    "description": "A powerful, full-bodied Shiraz packed with blackberry jam, black pepper and licorice. Warming and concentrated with robust tannins and a smoky, savory finish. Made for hearty stews and grilled lamb."
+  },
+  {
+    "title": "Loire Stone",
+    "variety": "Chenin Blanc",
+    "country": "France",
+    "province": "Loire Valley",
+    "winery": "Domaine Pierre",
+    "points": 89,
+    "price": 21.0,
+    "description": "A bright, honeyed white with quince, pear and chamomile notes over a chalky, mineral core. Lively acidity keeps it fresh and lifted through a long finish. A lovely match for goat cheese and roast pork."
+  },
+  {
+    "title": "Napa Crest Merlot",
+    "variety": "Merlot",
+    "country": "US",
+    "province": "California",
+    "winery": "Crest Winery",
+    "points": 88,
+    "price": 23.0,
+    "description": "A smooth, approachable Merlot offering ripe plum, black cherry and a touch of cocoa. Soft, rounded tannins and a gentle, fruity finish make it easy to enjoy on its own or with roast chicken and pasta."
+  },
+  {
+    "title": "Douro Heritage",
+    "variety": "Touriga Nacional",
+    "country": "Portugal",
+    "province": "Douro",
+    "winery": "Quinta da Serra",
+    "points": 92,
+    "price": 31.0,
+    "description": "A dense, aromatic red with violet, blueberry and crushed-rock minerality. Firm yet polished tannins frame a deep, savory palate and a long, perfumed finish. A distinctive, tasty wine that pairs with game and aged cheese."
+  },
+  {
+    "title": "Sonoma Gold",
+    "variety": "Zinfandel",
+    "country": "US",
+    "province": "California",
+    "winery": "Golden Oak",
+    "points": 90,
+    "price": 25.0,
+    "description": "A jammy, exuberant Zinfandel loaded with raspberry, blackberry and baking spice. Bold and slightly sweet on the mid-palate with a peppery, warming finish. A fun, tasty wine for burgers, ribs and pizza night."
+  }
+]

@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: invoice-agent
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:invoice_agent;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:}
+    driver-class-name: ${DATABASE_DRIVER:org.h2.Driver}
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    open-in-view: false
+  ai:
+    model:
+      chat: openai
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+      chat:
+        model: ${OPENAI_MODEL:gpt-5-mini}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+invoice-agent:
+  max-pdf-bytes: ${MAX_PDF_BYTES:10485760}
+  geneva:
+    base-url: ${GENEVA_BASE_URL:http://localhost:8081}
+    update-path: ${GENEVA_UPDATE_PATH:/api/geneva/invoices}
+    dry-run: ${GENEVA_DRY_RUN:true}
+  client:
+    default-callback-url: ${CLIENT_CALLBACK_URL:}
+    dry-run: ${CLIENT_CALLBACK_DRY_RUN:true}
+  nav-control-pack:
+    storage-dir: ${NAV_CONTROL_PACK_DIR:build/nav-control-packs}
