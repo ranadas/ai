@@ -8,6 +8,9 @@ from __future__ import annotations
 import os
 import re
 import sys
+from html import escape
+from html.parser import HTMLParser
+from urllib.parse import unquote, urlparse
 
 os.environ.setdefault("TK_SILENCE_DEPRECATION", "1")
 
@@ -26,6 +29,78 @@ FILE_TYPES = [
     ("Text files", "*.txt"),
     ("All files", "*.*"),
 ]
+
+IMAGE_FILE_TYPES = [
+    ("Image files", "*.png *.jpg *.jpeg *.gif *.bmp *.webp"),
+    ("All files", "*.*"),
+]
+
+REMOTE_IMAGE_SCHEMES = {"http", "https", "ftp", "data"}
+
+
+class ImageSourceResolver(HTMLParser):
+    """Rewrite generated HTML image sources without requiring extra packages."""
+
+    def __init__(self, resolve_src):
+        super().__init__(convert_charrefs=False)
+        self.resolve_src = resolve_src
+        self.parts: list[str] = []
+        self.changed = False
+
+    def _rewrite_attrs(self, tag: str, attrs) -> list[tuple[str, str | None]]:
+        if tag.lower() != "img":
+            return attrs
+        rewritten = []
+        for name, value in attrs:
+            if name.lower() == "src" and value:
+                resolved = self.resolve_src(value)
+                if resolved != value:
+                    self.changed = True
+                rewritten.append((name, resolved))
+            else:
+                rewritten.append((name, value))
+        return rewritten
+
+    def _format_attrs(self, attrs) -> str:
+        rendered = []
+        for name, value in attrs:
+            if value is None:
+                rendered.append(f" {name}")
+            else:
+                rendered.append(f' {name}="{escape(value, quote=True)}"')
+        return "".join(rendered)
+
+    def handle_starttag(self, tag, attrs) -> None:
+        attrs = self._rewrite_attrs(tag, attrs)
+        self.parts.append(f"<{tag}{self._format_attrs(attrs)}>")
+
+    def handle_startendtag(self, tag, attrs) -> None:
+        attrs = self._rewrite_attrs(tag, attrs)
+        self.parts.append(f"<{tag}{self._format_attrs(attrs)} />")
+
+    def handle_endtag(self, tag) -> None:
+        self.parts.append(f"</{tag}>")
+
+    def handle_data(self, data) -> None:
+        self.parts.append(data)
+
+    def handle_entityref(self, name) -> None:
+        self.parts.append(f"&{name};")
+
+    def handle_charref(self, name) -> None:
+        self.parts.append(f"&#{name};")
+
+    def handle_comment(self, data) -> None:
+        self.parts.append(f"<!--{data}-->")
+
+    def handle_decl(self, decl) -> None:
+        self.parts.append(f"<!{decl}>")
+
+    def handle_pi(self, data) -> None:
+        self.parts.append(f"<?{data}>")
+
+    def html(self) -> str:
+        return "".join(self.parts)
 
 
 class LineNumbers(tk.Canvas):
@@ -298,6 +373,7 @@ class MarkdownEditorApp(tk.Tk):
         self.md.reset()
         try:
             html_body = self.md.convert(source)
+            html_body = self._resolve_preview_image_sources(html_body)
         except Exception as exc:  # malformed input shouldn't crash the app
             html_body = f"<p><b>Render error:</b> {exc}</p>"
         if not html_body.strip():
@@ -401,6 +477,30 @@ class MarkdownEditorApp(tk.Tk):
         self.modified = False
         self._update_title()
         return True
+
+    def _document_base_dir(self) -> str:
+        if self.current_path:
+            return os.path.dirname(os.path.abspath(self.current_path))
+        return os.getcwd()
+
+    def _resolve_local_image_path(self, src: str) -> str:
+        if src.startswith("//"):
+            return src
+        parsed = urlparse(src)
+        if parsed.scheme in REMOTE_IMAGE_SCHEMES:
+            return src
+        if parsed.scheme == "file":
+            return unquote(parsed.path)
+        local_path = unquote(src)
+        if os.path.isabs(local_path):
+            return local_path
+        return os.path.abspath(os.path.join(self._document_base_dir(), local_path))
+
+    def _resolve_preview_image_sources(self, html_body: str) -> str:
+        resolver = ImageSourceResolver(self._resolve_local_image_path)
+        resolver.feed(html_body)
+        resolver.close()
+        return resolver.html() if resolver.changed else html_body
 
     def _render_html_document(self, body: str) -> str:
         doc_title = os.path.splitext(os.path.basename(self.current_path or "document"))[0]
@@ -581,7 +681,16 @@ class MarkdownEditorApp(tk.Tk):
         self.editor.focus_set()
 
     def make_image(self) -> None:
-        self.editor.insert("insert", "![alt text](path/to/image.png)")
+        path = filedialog.askopenfilename(title="Insert image", filetypes=IMAGE_FILE_TYPES)
+        if not path:
+            return
+        if self.current_path:
+            image_path = os.path.relpath(path, self._document_base_dir())
+        else:
+            image_path = path
+        image_path = image_path.replace(os.sep, "/")
+        alt_text = os.path.splitext(os.path.basename(path))[0] or "image"
+        self.editor.insert("insert", f"![{alt_text}]({image_path})")
         self.editor.focus_set()
 
     def make_table(self) -> None:
