@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-import anthropic
+from openai import OpenAI
 
 from .sql_store import SQLStore
 from .tools import ALL_TOOLS
@@ -27,12 +27,12 @@ class RAGPipeline:
         vector_store: InMemoryVectorStore,
         sql_store: SQLStore,
         model: str,
-        client: anthropic.Anthropic | None = None,
+        client: OpenAI | None = None,
     ):
         self.vector_store = vector_store
         self.sql_store = sql_store
         self.model = model
-        self.client = client or anthropic.Anthropic()
+        self.client = client or OpenAI()
 
     def _dispatch_tool(self, name: str, tool_input: dict) -> str:
         if name == "search_documents":
@@ -53,30 +53,45 @@ class RAGPipeline:
 
     def ask(self, question: str, max_turns: int = 6) -> str:
         system = SYSTEM_PROMPT_TEMPLATE.format(schema=self.sql_store.get_schema_description())
-        messages = [{"role": "user", "content": question}]
+        messages = [
+            {"role": "system", "content": system},
+            {"role": "user", "content": question},
+        ]
 
         for _ in range(max_turns):
-            response = self.client.messages.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
-                max_tokens=2048,
-                system=system,
-                tools=ALL_TOOLS,
                 messages=messages,
+                tools=ALL_TOOLS,
+            )
+            message = response.choices[0].message
+
+            if response.choices[0].finish_reason != "tool_calls" or not message.tool_calls:
+                return message.content or ""
+
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": message.content,
+                    "tool_calls": [
+                        {
+                            "id": tc.id,
+                            "type": "function",
+                            "function": {
+                                "name": tc.function.name,
+                                "arguments": tc.function.arguments,
+                            },
+                        }
+                        for tc in message.tool_calls
+                    ],
+                }
             )
 
-            if response.stop_reason != "tool_use":
-                return "".join(block.text for block in response.content if block.type == "text")
-
-            messages.append({"role": "assistant", "content": response.content})
-
-            tool_results = []
-            for block in response.content:
-                if block.type != "tool_use":
-                    continue
-                output = self._dispatch_tool(block.name, block.input)
-                tool_results.append(
-                    {"type": "tool_result", "tool_use_id": block.id, "content": output}
+            for tool_call in message.tool_calls:
+                args = json.loads(tool_call.function.arguments)
+                output = self._dispatch_tool(tool_call.function.name, args)
+                messages.append(
+                    {"role": "tool", "tool_call_id": tool_call.id, "content": output}
                 )
-            messages.append({"role": "user", "content": tool_results})
 
         return "Reached the maximum number of tool-use turns without a final answer."

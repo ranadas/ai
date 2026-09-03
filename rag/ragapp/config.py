@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DOCS_DIR = Path(os.environ.get("RAG_DOCS_DIR", "data/documents"))
-MODEL = os.environ.get("RAG_MODEL", "claude-opus-5")
+MODEL = os.environ.get("RAG_MODEL", "gpt-5")
 SQL_CONNECTION_STRING = os.environ.get("RAG_SQL_CONNECTION_STRING", "sqlite:///:memory:")
 CHUNK_SIZE = int(os.environ.get("RAG_CHUNK_SIZE", "1000"))
 CHUNK_OVERLAP = int(os.environ.get("RAG_CHUNK_OVERLAP", "150"))
