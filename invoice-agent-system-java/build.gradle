@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.0.7'
+}
+
+group = 'com.example'
+version = '0.1.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    implementation platform('org.springframework.ai:spring-ai-bom:2.0.0')
+
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+
+    // Koog 1.0.0 is kept as the agent framework dependency requested by the target design.
+    // The Java services are wired through InvoiceAgent<I, O> so concrete Koog-backed agents can be plugged in.
+    implementation 'ai.koog:koog-agents:1.0.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

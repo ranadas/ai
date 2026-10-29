@@ -1,0 +1,35 @@
+Subject: Why we shouldn't let an LLM do the maths on trading data
+
+Hi all,
+
+I had been thinking  about LLM use and did some reasearch.  I also remembered some things I read while doing my masters.  And no, this text is not AI generated. 
+I think it's worth being explicit about: we should not be asking an LLM to directly compute or analyse numerical data out of spreadsheets -  e.g trade files The AI absolutely has a role here, just not as the calculator.
+
+Here's the short version of why.
+
+An LLM doesn't actually calculate anything. It predicts  (uses probability) the next most likely token based on patterns in its training data. When it "sums" a column of 40,000 trades, it isn't running SUM() - it's generating text that looks like a plausible answer. Most of the time it'll be close. Close is fine for a chatbot recommending restaurants. It's not fine for a number that ends up in a  pack or gets reconciled against.
+
+
+
+A few things fall out of that:
+
+- Same file, same prompt, run twice - you can get two different answers. There's no guarantee of reproducibility, which is a problem the moment someone asks "can you re-run last month's numbers and confirm they match."
+- There's no audit trail. If a number's wrong, you can't point to a formula or a line of logic  ( as it can be in a normal code) - you're just asking the model to explain itself, which it will happily do whether or not that explanation is true.
+- It's a genuinely unreliable calculator. There's academic benchmarking on this - one study found that as company size increased, LLMs got *more* likely to hallucinate financial figures like , even though the real data was freely available. 
+
+This isn't theoretical. Deloitte shipped a A$440,000 report to the Australian government that used GPT-4o in its preparation, and it went out with a fabricated quote attributed to a federal court judgment plus citations to academic papers that don't exist. Nobody caught it internally - an outside academic found it after publication, by manually checking references. Air Canada was held liable in court after its support chatbot gave a customer wrong information about refund policy . In both cases the output looked professional and confident right up until someone checked it against the source.
+
+That's the risk with letting a model touch our numbers directly: it's not that it fails loudly, it's that it fails fluently. A wrong SUM in a formula throws an obviously wrong number you'll probably notice. A wrong SUM narrated in a paragraph reads exactly like a right one.
+
+What I'd propose instead - is keeping the LLM entirely outside the compute path:
+
+1. LLM parses messy input (inconsistent headers, free-text fields, varying file formats) into a clean structured shape.
+2. Deterministic code - Python, pandas, SQL, whatever fits - does the actual calculation. This is the part that has to be exact, testable, and reproducible on demand.
+3. LLM can narrate or summarise the output afterwards for a human reader, but never generates the number itself.
+
+So practically: we let AI write the analysis script, not perform the analysis. Ask it to generate a Python/pandas script against the trading file, review the script like we'd review any other code, run it, and the output is deterministic and re-runnable by anyone, audit or otherwise. The model's value is in speed of getting to the code, not in being the engine that does the maths.
+
+Happy to walk through this in person if useful, or put together a short reference pattern doc for the team.
+
+Thanks,
+Rana

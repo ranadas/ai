@@ -1,0 +1,50 @@
+flowchart TB
+  subgraph FE["plus365-web · projects/renewal (Angular)"]
+    direction LR
+    P1["Login"] --> P2["Email OTP<br/>(no TOTP only)"] --> P3["Equipe select<br/>(skip if 1)"] --> P4["Renewal cart<br/>edition + API plan"] --> P5["Thanks → logout"]
+    P3 -.->|non-admin| PX["Contact-your-admin page<br/>(admin names only)"]
+    P4 -.->|bank transfer pending| PY["Payment-in-progress page"]
+  end
+
+  LIB["libs: lib-renewal-cart (presentational)<br/>+ RenewalCheckoutService<br/>(shared with client app)"] -.-> P4
+
+  subgraph AWS_EDGE["AWS edge · CDK stack (new)"]
+    CF["CloudFront + OAC<br/>SPA fallback, security headers"] --> S3[("S3 private bucket")]
+    DNS["Route53 renew.nextgen.arzamed.com<br/>renew-test.nextgen.arzamed.com<br/>ACM cert"] --> CF
+  end
+  FE -.served by.-> CF
+
+  COG["Cognito Hosted UI<br/>new app client, code+PKCE<br/>TOTP if user enrolled"]
+  P1 <-->|OIDC| COG
+  P5 -->|revoke + /logout| COG
+
+  subgraph EKS["EKS · existing microservices"]
+    US["user-service<br/>• GET expired equipes where user has EQUIPE perm<br/>• GET equipe admins (names)<br/>• MFA status + email OTP start/verify"]
+    ES["equipe-service<br/>• RenewalEligibility: EXPIRING or EXPIRED<br/>• renewal-quote / payment link<br/>• returnTarget CLIENT|RENEWAL + cancel_url<br/>• expire superseded Stripe session<br/>• webhook → activate sub"]
+    AK["apikey-service<br/>pending-plan + reconcile<br/>(scope depends on Q1)"]
+    OTP["otp-service"]
+    AL["alert-service<br/>OTP + receipt emails"]
+    UI["userinfo-service<br/>unchanged: expired equipes<br/>reappear after activation"]
+  end
+
+  P2 --> US
+  P3 --> US
+  P4 --> ES
+  P4 --> AK
+  US --> OTP
+  US --> AL
+  US -->|OTP-verified marker, session TTL| RD[("Redis")]
+  ES -->|checks OTP marker| RD
+  AK -->|checks OTP marker| RD
+
+  ES -->|Checkout session| STR["Stripe<br/>card + bank transfer"]
+  P4 -->|redirect| STR
+  STR -->|success_url| P5
+  STR -->|webhook| ES
+  ES -->|applyPendingPlanNow| AK
+  ES --> DB[("Postgres<br/>EQUIPE_SUBSCRIPTION")]
+  ES -->|evict equipe cache| RD
+  ES --> AL
+
+  GH["GitHub Actions<br/>uat-/prod-build-renewal.yml<br/>+ cdk deploy<br/>(existing AWS key secrets)"] --> S3
+  GH -->|invalidate| CF
